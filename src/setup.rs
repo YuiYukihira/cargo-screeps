@@ -8,6 +8,7 @@ pub struct CliConfig {
     pub command: Command,
     pub config_path: Option<PathBuf>,
     pub deploy_mode: Option<String>,
+    pub nobuild: bool,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
@@ -39,6 +40,12 @@ fn app() -> clap::App<'static, 'static> {
                         .multiple(false)
                         .takes_value(true)
                         .value_name("CONFIG_FILE"),
+                )
+                .arg(
+                    clap::Arg::with_name("nobuild")
+                        .short("n")
+                        .long("nobuild")
+                        .help("Should we try and build the binary before uploading?")
                 )
                 .subcommand(
                     clap::SubCommand::with_name("build")
@@ -88,6 +95,8 @@ pub fn setup_cli() -> Result<CliConfig, failure::Error> {
         None => None,
     };
 
+    let nobuild = args.is_present("nobuild");
+
     let command = match args.subcommand_name() {
         Some("build") => Command::Build,
         Some("deploy") => Command::Deploy,
@@ -105,6 +114,7 @@ pub fn setup_cli() -> Result<CliConfig, failure::Error> {
         command,
         config_path: args.value_of("config").map(Into::into),
         deploy_mode: mode,
+        nobuild,
     };
 
     Ok(config)

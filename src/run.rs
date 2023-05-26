@@ -51,7 +51,9 @@ pub fn run() -> Result<(), failure::Error> {
                     prune,
                 } => {
                     config.build.merge(build);
-                    run_build(&root, &config.build)?;
+                    if !cli_config.nobuild {
+                        run_build(&root, &config.build)?;
+                    }
                     run_copy(
                         &root,
                         &config.build.path,
@@ -84,7 +86,9 @@ pub fn run() -> Result<(), failure::Error> {
                     );
 
                     config.build.merge(build);
-                    run_build(&root, &config.build)?;
+                    if !cli_config.nobuild {
+                        run_build(&root, &config.build)?;
+                    }
                     run_upload(
                         &root,
                         &config.build.path,
